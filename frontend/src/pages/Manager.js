@@ -9,17 +9,34 @@ function Manager() {
   const [field, setField] = useState("preco_minimo");
   const [search, setSearch] = useState("");
 
+  // FORMATADOR
+  const formatPrice = (value) => {
+    const num = Number(value);
+
+    if (num >= 1_000_000_000) {
+      return (num / 1_000_000_000).toFixed(1) + " Bilhões";
+    }
+
+    if (num >= 1_000_000) {
+      return (num / 1_000_000).toFixed(1) + " Milhões";
+    }
+
+    if (num >= 1_000) {
+      return (num / 1_000).toFixed(1) + " Mil";
+    }
+
+    return num.toString();
+  };
+
   const loadItems = async () => {
     try {
       const res = await api.get("/items");
       let data = [...res.data];
 
-      // FILTRO
       data = data.filter(item =>
         item.nome.toLowerCase().includes(search.toLowerCase())
       );
 
-      // ORDENAÇÃO
       data.sort((a, b) => {
         const valA = Number(a[field]);
         const valB = Number(b[field]);
@@ -87,23 +104,23 @@ function Manager() {
       </div>
 
       {/* GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 
         {items.map(item => (
           <div
             key={item.id}
-            className="bg-white dark:bg-gray-800 p-4 rounded shadow"
+            className="bg-white dark:bg-gray-800 rounded shadow flex flex-col overflow-hidden text-sm"
           >
 
             {/* IMAGEM */}
-            <div className="relative w-full aspect-square bg-gray-200 dark:bg-gray-800 flex items-center justify-center overflow-hidden rounded">
+            <div className="relative w-full aspect-square bg-gray-200 dark:bg-gray-800 flex items-center justify-center">
 
-              {/* BANDEIRA (AGORA NO CANTO SUPERIOR ESQUERDO) */}
+              {/* BANDEIRA */}
               {getFlag(item.pais) && (
                 <img
                   src={getFlag(item.pais)}
                   alt=""
-                  className="absolute top-2 left-2 w-1/2 h-1/2 object-contain z-20"
+                  className="absolute top-0 left-0 w-[60%] h-[60%] object-contain z-0"
                   onError={(e) => (e.target.style.display = "none")}
                 />
               )}
@@ -118,25 +135,37 @@ function Manager() {
                 />
               )}
 
+              {/* NOME SOBRE A IMAGEM */}
+              <div className="absolute bottom-0 left-0 bg-black/70 text-white px-2 py-1 text-xs font-bold z-20">
+                {item.nome}
+              </div>
+
             </div>
 
-            <h2 className="mt-2 font-bold">{item.nome}</h2>
+            {/* PREÇO */}
+            <div className="p-2 flex-1 text-xs">
+              <p>
+                💰 {formatPrice(item.preco_minimo)} - {formatPrice(item.preco_maximo)}
+              </p>
+            </div>
 
-            <p>
-              💰 {item.preco_minimo} - {item.preco_maximo}
-            </p>
+            {/* BOTÕES */}
+            <div className="flex border-t border-gray-300 dark:border-gray-700 text-xs">
 
-            <div className="flex gap-2 mt-2">
-              <Link to={`/edit/${item.id}`} className="text-yellow-500">
+              <Link
+                to={`/edit/${item.id}`}
+                className="w-1/2 text-center p-2 border-r border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
                 Editar
               </Link>
 
               <button
                 onClick={() => handleDelete(item.id)}
-                className="text-red-500"
+                className="w-1/2 p-2 hover:bg-red-100 dark:hover:bg-red-900"
               >
                 Deletar
               </button>
+
             </div>
 
           </div>
