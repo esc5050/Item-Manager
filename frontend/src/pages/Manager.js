@@ -20,15 +20,15 @@ function Manager() {
     const num = Number(value);
 
     if (num >= 1_000_000_000) {
-      return `${(num / 1_000_000_000).toFixed(1)}B`;
+      return `${(num / 1_000_000_000).toFixed(1)} Bi`;
     }
 
     if (num >= 1_000_000) {
-      return `${(num / 1_000_000).toFixed(1)}M`;
+      return `${(num / 1_000_000).toFixed(1)} Mi`;
     }
 
     if (num >= 1_000) {
-      return `${(num / 1_000).toFixed(1)}K`;
+      return `${(num / 1_000).toFixed(1)} Mil`;
     }
 
     return num.toString();
@@ -111,7 +111,7 @@ function Manager() {
                 Gerenciador de Itens
               </h1>
               <p className="mt-1" style={{ color: "var(--text-soft)" }}>
-                Explore os itens, filtre por nome e organize por preço mínimo ou máximo.
+                Veja os itens, filtre por nome e organize por preço mínimo ou máximo.
               </p>
             </div>
 
@@ -130,7 +130,7 @@ function Manager() {
                 }
                 className="theme-btn theme-btn-secondary rounded-2xl px-4 py-3 font-semibold shadow-md"
               >
-                Campo: {field === "preco_minimo" ? "Mínimo" : "Máximo"}
+                Preço: {field === "preco_minimo" ? "Mínimo" : "Máximo"}
               </button>
 
               <button

@@ -54,11 +54,11 @@ const validateItemData = ({
   }
 
   if (!pais || String(pais).trim() === "") {
-    return "O país é obrigatório.";
+    return "A nação é obrigatória.";
   }
 
   if (!ALLOWED_COUNTRIES.includes(pais)) {
-    return "O país selecionado é inválido.";
+    return "A nação selecionada é inválida.";
   }
 
   if (!nome || String(nome).trim() === "") {

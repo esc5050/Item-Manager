@@ -36,7 +36,7 @@ function Form() {
   return (
     <form onSubmit={handleSubmit}>
       <input placeholder="Foto" value={form.foto} onChange={e => setForm({...form, foto: e.target.value})} />
-      <input placeholder="País" value={form.pais} onChange={e => setForm({...form, pais: e.target.value})} />
+      <input placeholder="Nação" value={form.pais} onChange={e => setForm({...form, pais: e.target.value})} />
       <input placeholder="Nome" value={form.nome} onChange={e => setForm({...form, nome: e.target.value})} />
       <input placeholder="Descrição" value={form.descricao} onChange={e => setForm({...form, descricao: e.target.value})} />
       <input placeholder="Preço mínimo" value={form.preco_minimo} onChange={e => setForm({...form, preco_minimo: e.target.value})} />

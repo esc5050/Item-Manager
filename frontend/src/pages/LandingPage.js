@@ -10,7 +10,7 @@ function LandingPage() {
               className="inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold shadow-sm theme-surface"
               style={{ color: "var(--text-main)" }}
             >
-              Sistema web CRUD completo em React + Node + MySQL
+              Sistema web com CRUD em React + Node + MySQL
             </div>
 
             <div className="space-y-4">
@@ -28,9 +28,8 @@ function LandingPage() {
                 className="text-lg md:text-xl leading-relaxed max-w-2xl"
                 style={{ color: "var(--text-soft)" }}
               >
-                O Item Manager é um sistema para cadastro, edição, visualização,
-                exclusão e organização de itens aeronáuticos, com tema claro e
-                escuro, ordenação, busca e visualização detalhada.
+                O Item Manager é um sistema para cadastro, edição, visualização, 
+                exclusão e organização de itens, com ordenação, busca e visualização detalhada.
               </p>
             </div>
 
@@ -39,7 +38,7 @@ function LandingPage() {
                 to="/manager"
                 className="theme-btn theme-btn-primary px-6 py-3"
               >
-                Entrar no Manager
+                Acessar o Manager
               </Link>
             </div>
 

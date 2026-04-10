@@ -66,11 +66,11 @@ function Edit() {
     }
 
     if (!form.pais) {
-      return "Selecione um país.";
+      return "Selecione uma Nação.";
     }
 
     if (!countries.includes(form.pais)) {
-      return "O país selecionado é inválido.";
+      return "A Nação selecionada é inválida.";
     }
 
     if (!form.nome || form.nome.trim() === "") {
@@ -245,7 +245,7 @@ function Edit() {
 
                   <div>
                     <label className="block mb-2 text-sm font-semibold" style={{ color: "var(--text-main)" }}>
-                      País
+                      Nação
                     </label>
                     <select
                       className="w-full p-3 rounded-2xl outline-none theme-input focus:ring-2 focus:ring-blue-500"

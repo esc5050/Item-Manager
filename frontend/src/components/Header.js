@@ -73,7 +73,7 @@ function Header() {
               border: "1px solid var(--border)"
             }}
           >
-            {dark ? "☀ Claro" : "🌙 Escuro"}
+            {dark ? "☀️ Claro" : "🌙 Escuro"}
           </button>
         </div>
       </div>
