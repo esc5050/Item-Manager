@@ -37,20 +37,9 @@ function LandingPage() {
             <div className="flex flex-wrap gap-3">
               <Link
                 to="/manager"
-                className="px-6 py-3 rounded-2xl font-bold shadow-lg transition hover:scale-[1.02]"
-                style={{
-                  background: "var(--primary)",
-                  color: "#ffffff"
-                }}
+                className="theme-btn theme-btn-primary px-6 py-3"
               >
                 Entrar no Manager
-              </Link>
-
-              <Link
-                to="/novo"
-                className="px-6 py-3 rounded-2xl font-bold transition hover:scale-[1.02] theme-outline-btn"
-              >
-                Cadastrar novo item
               </Link>
             </div>
 

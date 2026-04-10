@@ -210,7 +210,7 @@ function Edit() {
 
                 <Link
                   to="/manager"
-                  className="hidden md:inline-flex px-4 py-2 rounded-2xl font-semibold theme-outline-btn"
+                  className="theme-btn theme-btn-outline hidden md:inline-flex px-4 py-2 font-semibold"
                 >
                   Voltar
                 </Link>
@@ -314,12 +314,8 @@ function Edit() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="px-6 py-3 rounded-2xl font-bold shadow-lg transition hover:scale-[1.02]"
-                    style={{
-                      background: "var(--primary)",
-                      color: "#ffffff",
-                      opacity: loading ? 0.75 : 1
-                    }}
+                    className="theme-btn theme-btn-primary px-6 py-3 rounded-2xl font-bold shadow-lg"
+                    style={{ opacity: loading ? 0.75 : 1 }}
                   >
                     {loading ? "Salvando..." : "Salvar"}
                   </button>
@@ -327,7 +323,7 @@ function Edit() {
                   <button
                     type="button"
                     onClick={() => navigate("/manager")}
-                    className="px-6 py-3 rounded-2xl font-bold transition theme-outline-btn"
+                    className="theme-btn theme-btn-outline px-6 py-3 rounded-2xl font-bold"
                   >
                     Cancelar
                   </button>

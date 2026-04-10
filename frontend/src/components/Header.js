@@ -21,19 +21,28 @@ function Header() {
 
   return (
     <header className="sticky top-0 z-50 theme-surface-soft border-b">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
-        <Link
-          to="/"
-          className="text-lg md:text-2xl font-black tracking-tight"
-          style={{ color: "var(--text-main)" }}
-        >
-          ITEM <span style={{ color: "var(--primary)" }}>MANAGER</span>
-        </Link>
+      <div className="max-w-7xl mx-auto px-4 md:px-6 min-h-16 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <Link
+            to="/"
+            className="text-lg md:text-2xl font-black tracking-tight"
+            style={{ color: "var(--text-main)" }}
+          >
+            ITEM <span style={{ color: "var(--primary)" }}>MANAGER</span>
+          </Link>
+
+          <span
+            className="hidden md:inline text-xs font-semibold"
+            style={{ color: "var(--text-soft)" }}
+          >
+            desenvolvido por Gustavo Lona Grespan
+          </span>
+        </div>
 
         <div className="flex items-center gap-2 md:gap-3">
           <Link
             to="/"
-            className="px-3 py-2 rounded-xl text-sm font-semibold transition"
+            className="theme-btn px-3 py-2 text-sm font-semibold"
             style={{
               background: isActive("/") ? "var(--primary)" : "transparent",
               color: isActive("/") ? "#ffffff" : "var(--text-main)",
@@ -45,7 +54,7 @@ function Header() {
 
           <Link
             to="/manager"
-            className="px-3 py-2 rounded-xl text-sm font-semibold transition"
+            className="theme-btn px-3 py-2 text-sm font-semibold"
             style={{
               background: isActive("/manager") ? "var(--primary)" : "transparent",
               color: isActive("/manager") ? "#ffffff" : "var(--text-main)",
@@ -57,7 +66,7 @@ function Header() {
 
           <button
             onClick={() => setDark(!dark)}
-            className="px-3 py-2 rounded-xl text-sm font-semibold transition hover:scale-[1.03]"
+            className="theme-btn px-3 py-2 text-sm font-semibold"
             style={{
               background: dark ? "var(--surface-strong)" : "var(--text-main)",
               color: dark ? "var(--text-main)" : "#ffffff",

@@ -128,24 +128,21 @@ function Manager() {
                 onClick={() =>
                   setField(field === "preco_minimo" ? "preco_maximo" : "preco_minimo")
                 }
-                className="rounded-2xl px-4 py-3 font-semibold shadow-md transition hover:scale-[1.02]"
-                style={{ background: "var(--secondary)", color: "#ffffff" }}
+                className="theme-btn theme-btn-secondary rounded-2xl px-4 py-3 font-semibold shadow-md"
               >
                 Campo: {field === "preco_minimo" ? "Mínimo" : "Máximo"}
               </button>
 
               <button
                 onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
-                className="rounded-2xl px-4 py-3 font-semibold shadow-md transition hover:scale-[1.02]"
-                style={{ background: "var(--success)", color: "#ffffff" }}
+                className="theme-btn theme-btn-success rounded-2xl px-4 py-3 font-semibold shadow-md"
               >
                 Ordem: {order === "asc" ? "Crescente" : "Decrescente"}
               </button>
 
               <Link
                 to="/novo"
-                className="rounded-2xl px-4 py-3 font-semibold shadow-md transition hover:scale-[1.02] text-center"
-                style={{ background: "var(--primary)", color: "#ffffff" }}
+                className="theme-btn theme-btn-primary rounded-2xl px-4 py-3 font-semibold shadow-md text-center"
               >
                 + Novo Item
               </Link>
@@ -212,6 +209,7 @@ function Manager() {
                         src={item.foto}
                         alt={item.nome}
                         className="max-w-full max-h-full object-contain transition duration-300 group-hover:scale-105"
+                        style={{ filter: "drop-shadow(0 14px 16px rgba(0,0,0,0.18))" }}
                         onError={(e) => {
                           e.currentTarget.style.display = "none";
                         }}
@@ -219,10 +217,10 @@ function Manager() {
                     )}
                   </Link>
 
-                  <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/90 via-black/60 to-transparent px-3 py-3">
+                  <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/70 via-black/35 to-transparent px-3 py-3">
                     <Link
                       to={`/item/${item.id}`}
-                      className="inline-block text-white text-xs md:text-sm font-bold leading-tight transition hover:text-cyan-300"
+                      className="inline-block text-white text-xs md:text-sm font-bold leading-tight transition group-hover:text-cyan-300"
                     >
                       {item.nome}
                     </Link>
@@ -242,7 +240,11 @@ function Manager() {
                       {item.pais}
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="text-[11px] md:text-xs font-semibold" style={{ color: "var(--text-soft)" }}>
+                        Preço:
+                      </p>
+
                       <span
                         className="px-3 py-1 rounded-full text-[11px] md:text-xs font-bold"
                         style={{
@@ -265,32 +267,20 @@ function Manager() {
                         Max ${formatPrice(item.preco_maximo)}
                       </span>
                     </div>
-
-                    <p className="text-[11px] md:text-xs font-semibold" style={{ color: "var(--text-soft)" }}>
-                      Preço:
-                    </p>
                   </div>
                 </div>
 
                 <div className="flex gap-2 p-3 pt-0">
                   <Link
                     to={`/edit/${item.id}`}
-                    className="w-1/2 text-center py-3 rounded-2xl font-bold shadow-md transition hover:scale-[1.02]"
-                    style={{
-                      background: "linear-gradient(135deg, #f2b94b 0%, #d89213 100%)",
-                      color: "#ffffff"
-                    }}
+                    className="theme-btn theme-btn-warning-outline w-1/2 py-3 rounded-2xl font-bold"
                   >
                     Editar
                   </Link>
 
                   <button
                     onClick={() => openDeleteModal(item)}
-                    className="w-1/2 py-3 rounded-2xl font-bold shadow-md transition hover:scale-[1.02]"
-                    style={{
-                      background: "linear-gradient(135deg, #e26b6b 0%, #c44848 100%)",
-                      color: "#ffffff"
-                    }}
+                    className="theme-btn theme-btn-danger-outline w-1/2 py-3 rounded-2xl font-bold"
                   >
                     Deletar
                   </button>

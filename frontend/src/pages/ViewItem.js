@@ -70,8 +70,7 @@ function ViewItem() {
             </p>
             <button
               onClick={() => navigate("/manager")}
-              className="rounded-2xl px-5 py-3 font-semibold transition"
-              style={{ background: "var(--primary)", color: "#ffffff" }}
+              className="theme-btn theme-btn-primary rounded-2xl px-5 py-3 font-semibold"
             >
               Voltar para o Manager
             </button>
@@ -102,14 +101,15 @@ function ViewItem() {
                 <img
                   src={item.foto}
                   alt={item.nome}
-                  className="relative z-10 max-w-[88%] max-h-[88%] object-contain drop-shadow-2xl"
+                  className="relative z-10 max-w-[88%] max-h-[88%] object-contain"
+                  style={{ filter: "drop-shadow(0 14px 16px rgba(0,0,0,0.18))" }}
                   onError={(e) => {
                     e.currentTarget.style.display = "none";
                   }}
                 />
               )}
 
-              <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/90 via-black/60 to-transparent px-5 py-5">
+              <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/70 via-black/35 to-transparent px-5 py-5">
                 <p className="text-white/80 text-sm font-semibold mb-1">{item.pais}</p>
                 <h1 className="text-white text-2xl md:text-4xl font-black">
                   {item.nome}
@@ -119,6 +119,17 @@ function ViewItem() {
 
             <div className="p-6 md:p-8">
               <div className="flex flex-wrap gap-3 mb-6">
+                <span
+                  className="px-3 py-1 rounded-full text-sm font-semibold"
+                  style={{
+                    background: "var(--surface-strong)",
+                    color: "var(--text-main)",
+                    border: "1px solid var(--border)"
+                  }}
+                >
+                  {item.pais}
+                </span>
+
                 <span
                   className="px-3 py-1 rounded-full text-sm font-semibold"
                   style={{
@@ -192,18 +203,14 @@ function ViewItem() {
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   to={`/edit/${item.id}`}
-                  className="rounded-2xl px-5 py-3 font-bold shadow-md transition hover:scale-[1.02]"
-                  style={{
-                    background: "linear-gradient(135deg, #f2b94b 0%, #d89213 100%)",
-                    color: "#ffffff"
-                  }}
+                  className="theme-btn theme-btn-warning-outline rounded-2xl px-5 py-3 font-bold"
                 >
                   Editar item
                 </Link>
 
                 <button
                   onClick={() => navigate("/manager")}
-                  className="rounded-2xl px-5 py-3 font-semibold transition theme-outline-btn"
+                  className="theme-btn theme-btn-outline rounded-2xl px-5 py-3 font-semibold"
                 >
                   Voltar
                 </button>
