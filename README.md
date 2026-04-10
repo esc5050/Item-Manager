@@ -6,14 +6,16 @@
 
 ## Como rodar o projeto
 
+No terminal execute os comandos nessa ordem ou execute start-project.bat
+
 - cd backend
 - npm install
-
+- cd ..
 - cd frontend
 - npm install
-
+- cd ..
 - cd backend
 - npm run dev
-
+- cd ..
 - cd frontend
 - npm start
