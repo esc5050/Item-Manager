@@ -20,41 +20,49 @@ function Header() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/30 dark:border-gray-800 bg-white/70 dark:bg-gray-950/70 backdrop-blur-xl shadow-sm">
+    <header className="sticky top-0 z-50 theme-surface-soft border-b">
       <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
         <Link
           to="/"
-          className="text-lg md:text-2xl font-black tracking-tight text-gray-900 dark:text-white"
+          className="text-lg md:text-2xl font-black tracking-tight"
+          style={{ color: "var(--text-main)" }}
         >
-          ITEM <span className="text-blue-600 dark:text-cyan-400">MANAGER</span>
+          ITEM <span style={{ color: "var(--primary)" }}>MANAGER</span>
         </Link>
 
         <div className="flex items-center gap-2 md:gap-3">
           <Link
             to="/"
-            className={`px-3 py-2 rounded-xl text-sm font-semibold transition ${
-              isActive("/")
-                ? "bg-blue-600 text-white shadow-md"
-                : "text-gray-700 dark:text-gray-200 hover:bg-white/70 dark:hover:bg-gray-800"
-            }`}
+            className="px-3 py-2 rounded-xl text-sm font-semibold transition"
+            style={{
+              background: isActive("/") ? "var(--primary)" : "transparent",
+              color: isActive("/") ? "#ffffff" : "var(--text-main)",
+              border: isActive("/") ? "1px solid transparent" : "1px solid var(--border)"
+            }}
           >
             Início
           </Link>
 
           <Link
             to="/manager"
-            className={`px-3 py-2 rounded-xl text-sm font-semibold transition ${
-              isActive("/manager")
-                ? "bg-blue-600 text-white shadow-md"
-                : "text-gray-700 dark:text-gray-200 hover:bg-white/70 dark:hover:bg-gray-800"
-            }`}
+            className="px-3 py-2 rounded-xl text-sm font-semibold transition"
+            style={{
+              background: isActive("/manager") ? "var(--primary)" : "transparent",
+              color: isActive("/manager") ? "#ffffff" : "var(--text-main)",
+              border: isActive("/manager") ? "1px solid transparent" : "1px solid var(--border)"
+            }}
           >
             Manager
           </Link>
 
           <button
             onClick={() => setDark(!dark)}
-            className="px-3 py-2 rounded-xl text-sm font-semibold bg-gray-900 text-white dark:bg-white dark:text-gray-900 hover:scale-[1.03] transition"
+            className="px-3 py-2 rounded-xl text-sm font-semibold transition hover:scale-[1.03]"
+            style={{
+              background: dark ? "var(--surface-strong)" : "var(--text-main)",
+              color: dark ? "var(--text-main)" : "#ffffff",
+              border: "1px solid var(--border)"
+            }}
           >
             {dark ? "☀ Claro" : "🌙 Escuro"}
           </button>

@@ -35,47 +35,130 @@ function Edit() {
     if (id) {
       api.get(`/items/${id}`)
         .then((res) => setForm(res.data))
-        .catch(() => setErro("Erro ao carregar item"));
+        .catch((err) => {
+          setErro(err.response?.data?.erro || "Erro ao carregar item.");
+        });
     }
   }, [id]);
+
+  const isValidUrl = (value) => {
+    if (!value || typeof value !== "string") return false;
+
+    try {
+      const url = new URL(value);
+      return url.protocol === "http:" || url.protocol === "https:";
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const validateForm = () => {
+    if (!form.foto || form.foto.trim() === "") {
+      return "A URL da imagem é obrigatória.";
+    }
+
+    if (!isValidUrl(form.foto)) {
+      return "A URL da imagem é inválida. Use um link começando com http:// ou https://";
+    }
+
+    if (form.foto.trim().length > 500) {
+      return "A URL da imagem está muito longa. Use no máximo 500 caracteres.";
+    }
+
+    if (!form.pais) {
+      return "Selecione um país.";
+    }
+
+    if (!countries.includes(form.pais)) {
+      return "O país selecionado é inválido.";
+    }
+
+    if (!form.nome || form.nome.trim() === "") {
+      return "O nome do item é obrigatório.";
+    }
+
+    if (form.nome.trim().length < 2) {
+      return "O nome deve ter pelo menos 2 caracteres.";
+    }
+
+    if (form.nome.trim().length > 150) {
+      return "O nome está muito longo. Use no máximo 150 caracteres.";
+    }
+
+    if (form.descricao && form.descricao.length > 5000) {
+      return "A descrição está muito longa. Use no máximo 5000 caracteres.";
+    }
+
+    if (form.preco_minimo === "" || isNaN(Number(form.preco_minimo))) {
+      return "O preço mínimo deve ser um número válido.";
+    }
+
+    if (form.preco_maximo === "" || isNaN(Number(form.preco_maximo))) {
+      return "O preço máximo deve ser um número válido.";
+    }
+
+    if (Number(form.preco_minimo) <= 0) {
+      return "O preço mínimo deve ser maior que zero.";
+    }
+
+    if (Number(form.preco_maximo) <= 0) {
+      return "O preço máximo deve ser maior que zero.";
+    }
+
+    if (Number(form.preco_maximo) < Number(form.preco_minimo)) {
+      return "O preço máximo não pode ser menor que o preço mínimo.";
+    }
+
+    return "";
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErro("");
 
-    if (!form.nome || !form.pais) {
-      setErro("Preencha nome e país!");
-      return;
-    }
-
-    if (isNaN(form.preco_minimo) || isNaN(form.preco_maximo)) {
-      setErro("Preços devem ser números!");
+    const validationError = validateForm();
+    if (validationError) {
+      setErro(validationError);
       return;
     }
 
     try {
       setLoading(true);
 
+      const payload = {
+        foto: form.foto.trim(),
+        pais: form.pais,
+        nome: form.nome.trim(),
+        descricao: form.descricao ? form.descricao.trim() : "",
+        preco_minimo: Number(form.preco_minimo),
+        preco_maximo: Number(form.preco_maximo)
+      };
+
       if (id) {
-        await api.put(`/items/${id}`, form);
+        await api.put(`/items/${id}`, payload);
       } else {
-        await api.post("/items", form);
+        await api.post("/items", payload);
       }
 
       navigate("/manager");
     } catch (err) {
-      setErro(err.response?.data?.erro || "Erro ao salvar item");
+      setErro(err.response?.data?.erro || "Não foi possível salvar o item.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen text-black dark:text-white">
+    <div className="theme-page">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-8">
-        <div className="rounded-[2rem] bg-white/75 dark:bg-gray-900/75 backdrop-blur-xl border border-white/40 dark:border-gray-800 shadow-2xl overflow-hidden">
+        <div className="rounded-[2rem] theme-surface-strong overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2">
-            <div className="relative bg-gradient-to-br from-blue-500 via-cyan-500 to-indigo-700 min-h-[320px] lg:min-h-full flex items-center justify-center overflow-hidden">
+            <div
+              className="relative min-h-[320px] lg:min-h-full flex items-center justify-center overflow-hidden"
+              style={{
+                background: "linear-gradient(135deg, var(--primary) 0%, var(--accent) 50%, var(--secondary) 100%)"
+              }}
+            >
               {getFlag(form.pais) && (
                 <img
                   src={getFlag(form.pais)}
@@ -117,24 +200,31 @@ function Edit() {
             <div className="p-6 md:p-8">
               <div className="flex items-center justify-between gap-3 mb-6">
                 <div>
-                  <h2 className="text-3xl font-black">
+                  <h2 className="text-3xl font-black" style={{ color: "var(--text-main)" }}>
                     {id ? "Editar Item" : "Cadastrar Item"}
                   </h2>
-                  <p className="text-gray-600 dark:text-gray-300 mt-1">
-                    Preencha os dados com cuidado para manter o catálogo organizado.
+                  <p className="mt-1" style={{ color: "var(--text-soft)" }}>
+                    Preencha os dados corretamente para evitar erros no cadastro.
                   </p>
                 </div>
 
                 <Link
                   to="/manager"
-                  className="hidden md:inline-flex px-4 py-2 rounded-2xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-semibold"
+                  className="hidden md:inline-flex px-4 py-2 rounded-2xl font-semibold theme-outline-btn"
                 >
                   Voltar
                 </Link>
               </div>
 
               {erro && (
-                <div className="mb-5 rounded-2xl border border-red-300 bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300 dark:border-red-800 px-4 py-3">
+                <div
+                  className="mb-5 rounded-2xl px-4 py-3 border"
+                  style={{
+                    background: "rgba(211,93,93,0.12)",
+                    color: "var(--danger)",
+                    borderColor: "rgba(211,93,93,0.35)"
+                  }}
+                >
                   {erro}
                 </div>
               )}
@@ -142,11 +232,11 @@ function Edit() {
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block mb-2 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                    <label className="block mb-2 text-sm font-semibold" style={{ color: "var(--text-main)" }}>
                       Imagem (URL)
                     </label>
                     <input
-                      className="w-full border border-gray-300 dark:border-gray-700 p-3 rounded-2xl bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full p-3 rounded-2xl outline-none theme-input focus:ring-2 focus:ring-blue-500"
                       value={form.foto}
                       onChange={(e) => setForm({ ...form, foto: e.target.value })}
                       placeholder="https://..."
@@ -154,11 +244,11 @@ function Edit() {
                   </div>
 
                   <div>
-                    <label className="block mb-2 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                    <label className="block mb-2 text-sm font-semibold" style={{ color: "var(--text-main)" }}>
                       País
                     </label>
                     <select
-                      className="w-full border border-gray-300 dark:border-gray-700 p-3 rounded-2xl bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full p-3 rounded-2xl outline-none theme-input focus:ring-2 focus:ring-blue-500"
                       value={form.pais}
                       onChange={(e) => setForm({ ...form, pais: e.target.value })}
                     >
@@ -174,22 +264,22 @@ function Edit() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block mb-2 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                    <label className="block mb-2 text-sm font-semibold" style={{ color: "var(--text-main)" }}>
                       Nome
                     </label>
                     <input
-                      className="w-full border border-gray-300 dark:border-gray-700 p-3 rounded-2xl bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full p-3 rounded-2xl outline-none theme-input focus:ring-2 focus:ring-blue-500"
                       value={form.nome}
                       onChange={(e) => setForm({ ...form, nome: e.target.value })}
                     />
                   </div>
 
                   <div>
-                    <label className="block mb-2 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                    <label className="block mb-2 text-sm font-semibold" style={{ color: "var(--text-main)" }}>
                       Descrição
                     </label>
                     <input
-                      className="w-full border border-gray-300 dark:border-gray-700 p-3 rounded-2xl bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full p-3 rounded-2xl outline-none theme-input focus:ring-2 focus:ring-blue-500"
                       value={form.descricao}
                       onChange={(e) => setForm({ ...form, descricao: e.target.value })}
                     />
@@ -198,22 +288,22 @@ function Edit() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block mb-2 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                    <label className="block mb-2 text-sm font-semibold" style={{ color: "var(--text-main)" }}>
                       Preço Mínimo
                     </label>
                     <input
-                      className="w-full border border-gray-300 dark:border-gray-700 p-3 rounded-2xl bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full p-3 rounded-2xl outline-none theme-input focus:ring-2 focus:ring-blue-500"
                       value={form.preco_minimo}
                       onChange={(e) => setForm({ ...form, preco_minimo: e.target.value })}
                     />
                   </div>
 
                   <div>
-                    <label className="block mb-2 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                    <label className="block mb-2 text-sm font-semibold" style={{ color: "var(--text-main)" }}>
                       Preço Máximo
                     </label>
                     <input
-                      className="w-full border border-gray-300 dark:border-gray-700 p-3 rounded-2xl bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full p-3 rounded-2xl outline-none theme-input focus:ring-2 focus:ring-blue-500"
                       value={form.preco_maximo}
                       onChange={(e) => setForm({ ...form, preco_maximo: e.target.value })}
                     />
@@ -224,7 +314,12 @@ function Edit() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 disabled:opacity-70 text-white font-bold shadow-lg shadow-blue-500/20 transition hover:scale-[1.02]"
+                    className="px-6 py-3 rounded-2xl font-bold shadow-lg transition hover:scale-[1.02]"
+                    style={{
+                      background: "var(--primary)",
+                      color: "#ffffff",
+                      opacity: loading ? 0.75 : 1
+                    }}
                   >
                     {loading ? "Salvando..." : "Salvar"}
                   </button>
@@ -232,7 +327,7 @@ function Edit() {
                   <button
                     type="button"
                     onClick={() => navigate("/manager")}
-                    className="px-6 py-3 rounded-2xl bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 font-bold transition"
+                    className="px-6 py-3 rounded-2xl font-bold transition theme-outline-btn"
                   >
                     Cancelar
                   </button>

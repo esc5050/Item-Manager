@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 import { Link } from "react-router-dom";
 import { getFlag } from "../utils/flags";
+import DeleteItemModal from "../components/DeleteItemModal";
 
 function Manager() {
   const [items, setItems] = useState([]);
@@ -11,19 +12,23 @@ function Manager() {
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
   const formatPrice = (value) => {
     const num = Number(value);
 
     if (num >= 1_000_000_000) {
-      return `${(num / 1_000_000_000).toFixed(1)} Bilhões`;
+      return `${(num / 1_000_000_000).toFixed(1)}B`;
     }
 
     if (num >= 1_000_000) {
-      return `${(num / 1_000_000).toFixed(1)} Milhões`;
+      return `${(num / 1_000_000).toFixed(1)}M`;
     }
 
     if (num >= 1_000) {
-      return `${(num / 1_000).toFixed(1)} Mil`;
+      return `${(num / 1_000).toFixed(1)}K`;
     }
 
     return num.toString();
@@ -44,13 +49,12 @@ function Manager() {
       data.sort((a, b) => {
         const valA = Number(a[field]);
         const valB = Number(b[field]);
-
         return order === "asc" ? valA - valB : valB - valA;
       });
 
       setItems(data);
     } catch (err) {
-      setErro("Erro ao carregar itens.");
+      setErro(err.response?.data?.erro || "Erro ao carregar itens.");
     } finally {
       setLoading(false);
     }
@@ -61,28 +65,52 @@ function Manager() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [order, field, search]);
 
-  const handleDelete = async (id) => {
-    const confirmar = window.confirm("Tem certeza que deseja deletar este item?");
-    if (!confirmar) return;
+  const openDeleteModal = (item) => {
+    setItemToDelete(item);
+    setDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    if (deleteLoading) return;
+    setDeleteModalOpen(false);
+    setItemToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
 
     try {
-      await api.delete(`/items/${id}`);
+      setDeleteLoading(true);
+      setErro("");
+
+      await api.delete(`/items/${itemToDelete.id}`);
+      setDeleteLoading(false);
+      closeDeleteModal();
       loadItems();
     } catch (err) {
-      setErro("Erro ao deletar item.");
+      setErro(err.response?.data?.erro || "Erro ao deletar item.");
+      setDeleteLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen text-black dark:text-white">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-8">
-        <div className="mb-8 rounded-[2rem] bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border border-white/40 dark:border-gray-800 shadow-2xl p-5 md:p-6">
+    <div className="theme-page">
+      <DeleteItemModal
+        isOpen={deleteModalOpen}
+        itemName={itemToDelete?.nome || ""}
+        onCancel={closeDeleteModal}
+        onConfirm={confirmDelete}
+        loading={deleteLoading}
+      />
+
+      <div className="theme-container">
+        <div className="mb-8 rounded-[2rem] theme-surface-strong p-5 md:p-6">
           <div className="flex flex-col gap-4">
             <div>
-              <h1 className="text-3xl md:text-4xl font-black tracking-tight">
+              <h1 className="text-3xl md:text-4xl font-black tracking-tight" style={{ color: "var(--text-main)" }}>
                 Gerenciador de Itens
               </h1>
-              <p className="text-gray-600 dark:text-gray-300 mt-1">
+              <p className="mt-1" style={{ color: "var(--text-soft)" }}>
                 Explore os itens, filtre por nome e organize por preço mínimo ou máximo.
               </p>
             </div>
@@ -91,32 +119,33 @@ function Manager() {
               <input
                 type="text"
                 placeholder="Buscar por nome do item..."
-                className="w-full rounded-2xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                className="w-full rounded-2xl px-4 py-3 outline-none shadow-sm theme-input focus:ring-2 focus:ring-blue-500"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
 
               <button
                 onClick={() =>
-                  setField(
-                    field === "preco_minimo" ? "preco_maximo" : "preco_minimo"
-                  )
+                  setField(field === "preco_minimo" ? "preco_maximo" : "preco_minimo")
                 }
-                className="rounded-2xl bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 font-semibold shadow-md transition hover:scale-[1.02]"
+                className="rounded-2xl px-4 py-3 font-semibold shadow-md transition hover:scale-[1.02]"
+                style={{ background: "var(--secondary)", color: "#ffffff" }}
               >
                 Campo: {field === "preco_minimo" ? "Mínimo" : "Máximo"}
               </button>
 
               <button
                 onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
-                className="rounded-2xl bg-green-600 hover:bg-green-700 text-white px-4 py-3 font-semibold shadow-md transition hover:scale-[1.02]"
+                className="rounded-2xl px-4 py-3 font-semibold shadow-md transition hover:scale-[1.02]"
+                style={{ background: "var(--success)", color: "#ffffff" }}
               >
                 Ordem: {order === "asc" ? "Crescente" : "Decrescente"}
               </button>
 
               <Link
                 to="/novo"
-                className="rounded-2xl bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 font-semibold shadow-md transition hover:scale-[1.02] text-center"
+                className="rounded-2xl px-4 py-3 font-semibold shadow-md transition hover:scale-[1.02] text-center"
+                style={{ background: "var(--primary)", color: "#ffffff" }}
               >
                 + Novo Item
               </Link>
@@ -125,7 +154,14 @@ function Manager() {
         </div>
 
         {erro && (
-          <div className="mb-6 rounded-2xl border border-red-300 bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300 dark:border-red-800 px-4 py-3">
+          <div
+            className="mb-6 rounded-2xl px-4 py-3 border"
+            style={{
+              background: "rgba(211,93,93,0.12)",
+              color: "var(--danger)",
+              borderColor: "rgba(211,93,93,0.35)"
+            }}
+          >
             {erro}
           </div>
         )}
@@ -135,14 +171,16 @@ function Manager() {
             {Array.from({ length: 8 }).map((_, index) => (
               <div
                 key={index}
-                className="h-72 rounded-3xl bg-white/60 dark:bg-gray-800/60 animate-pulse shadow-md"
+                className="h-72 rounded-3xl animate-pulse theme-surface"
               />
             ))}
           </div>
         ) : items.length === 0 ? (
-          <div className="rounded-[2rem] bg-white/70 dark:bg-gray-900/70 shadow-2xl p-10 text-center border border-white/40 dark:border-gray-800">
-            <h2 className="text-2xl font-bold mb-2">Nenhum item encontrado</h2>
-            <p className="text-gray-600 dark:text-gray-300">
+          <div className="rounded-[2rem] theme-surface-strong p-10 text-center">
+            <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--text-main)" }}>
+              Nenhum item encontrado
+            </h2>
+            <p style={{ color: "var(--text-soft)" }}>
               Tente mudar a busca ou cadastre um novo item.
             </p>
           </div>
@@ -151,9 +189,9 @@ function Manager() {
             {items.map((item) => (
               <div
                 key={item.id}
-                className="group bg-white/75 dark:bg-gray-900/75 backdrop-blur-xl rounded-[1.75rem] shadow-xl border border-white/40 dark:border-gray-800 overflow-hidden flex flex-col transition duration-300 hover:-translate-y-1 hover:shadow-2xl"
+                className="group rounded-[1.75rem] overflow-hidden flex flex-col transition duration-300 hover:-translate-y-1 hover:shadow-2xl theme-surface"
               >
-                <div className="relative aspect-square bg-gray-200 dark:bg-gray-950 flex items-center justify-center overflow-hidden">
+                <div className="relative aspect-square theme-item-image-bg flex items-center justify-center overflow-hidden">
                   {getFlag(item.pais) && (
                     <img
                       src={getFlag(item.pais)}
@@ -184,7 +222,7 @@ function Manager() {
                   <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/90 via-black/60 to-transparent px-3 py-3">
                     <Link
                       to={`/item/${item.id}`}
-                      className="inline-block text-white text-xs md:text-sm font-bold leading-tight hover:text-cyan-300 transition"
+                      className="inline-block text-white text-xs md:text-sm font-bold leading-tight transition hover:text-cyan-300"
                     >
                       {item.nome}
                     </Link>
@@ -192,28 +230,67 @@ function Manager() {
                 </div>
 
                 <div className="p-3 flex-1 flex flex-col justify-between">
-                  <div className="space-y-2">
-                    <div className="inline-flex rounded-full bg-gray-100 dark:bg-gray-800 px-3 py-1 text-[11px] font-semibold border border-gray-200 dark:border-gray-700">
+                  <div className="space-y-3">
+                    <div
+                      className="inline-flex rounded-full px-3 py-1 text-[11px] font-semibold border"
+                      style={{
+                        background: "var(--surface-strong)",
+                        color: "var(--text-main)",
+                        borderColor: "var(--border)"
+                      }}
+                    >
                       {item.pais}
                     </div>
 
-                    <p className="text-[11px] md:text-xs font-medium text-gray-700 dark:text-gray-200">
-                      💰 {formatPrice(item.preco_minimo)} - {formatPrice(item.preco_maximo)}
+                    <div className="flex flex-wrap gap-2">
+                      <span
+                        className="px-3 py-1 rounded-full text-[11px] md:text-xs font-bold"
+                        style={{
+                          background: "rgba(46,158,132,0.12)",
+                          color: "var(--success)",
+                          border: "1px solid rgba(46,158,132,0.28)"
+                        }}
+                      >
+                        Min ${formatPrice(item.preco_minimo)}
+                      </span>
+
+                      <span
+                        className="px-3 py-1 rounded-full text-[11px] md:text-xs font-bold"
+                        style={{
+                          background: "rgba(211,93,93,0.12)",
+                          color: "var(--danger)",
+                          border: "1px solid rgba(211,93,93,0.28)"
+                        }}
+                      >
+                        Max ${formatPrice(item.preco_maximo)}
+                      </span>
+                    </div>
+
+                    <p className="text-[11px] md:text-xs font-semibold" style={{ color: "var(--text-soft)" }}>
+                      Preço:
                     </p>
                   </div>
                 </div>
 
-                <div className="flex border-t border-gray-300 dark:border-gray-800 text-xs md:text-sm">
+                <div className="flex gap-2 p-3 pt-0">
                   <Link
                     to={`/edit/${item.id}`}
-                    className="w-1/2 text-center py-3 border-r border-gray-300 dark:border-gray-800 hover:bg-yellow-100 dark:hover:bg-yellow-900/40 transition font-semibold"
+                    className="w-1/2 text-center py-3 rounded-2xl font-bold shadow-md transition hover:scale-[1.02]"
+                    style={{
+                      background: "linear-gradient(135deg, #f2b94b 0%, #d89213 100%)",
+                      color: "#ffffff"
+                    }}
                   >
                     Editar
                   </Link>
 
                   <button
-                    onClick={() => handleDelete(item.id)}
-                    className="w-1/2 py-3 hover:bg-red-100 dark:hover:bg-red-900/40 transition font-semibold"
+                    onClick={() => openDeleteModal(item)}
+                    className="w-1/2 py-3 rounded-2xl font-bold shadow-md transition hover:scale-[1.02]"
+                    style={{
+                      background: "linear-gradient(135deg, #e26b6b 0%, #c44848 100%)",
+                      color: "#ffffff"
+                    }}
                   >
                     Deletar
                   </button>
