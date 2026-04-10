@@ -8,8 +8,12 @@
 
 - cd backend
 - npm install
-- npm run dev
 
 - cd frontend
 - npm install
+
+- cd backend
+- npm run dev
+
+- cd frontend
 - npm start
